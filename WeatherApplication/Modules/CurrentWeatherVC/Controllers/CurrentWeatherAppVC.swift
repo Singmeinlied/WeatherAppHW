@@ -15,7 +15,10 @@ class CurrentWeatherAppVC: UIViewController{
     @IBOutlet weak var mainLabel: UILabel!
     @IBOutlet weak var cityNameLabel: UILabel!
     
+    @IBOutlet weak var futureWeatherOutlet: UIButton!
     var locationManager = CLLocationManager()
+    
+    var cityName: String?
     
     var currentWeatherManager = CurrentWeatherManager.shared
     
@@ -31,15 +34,58 @@ class CurrentWeatherAppVC: UIViewController{
     }
     
     @IBAction func currentPositionTapped(_ sender: UIButton) {
+        locationManager.requestLocation()
     }
     
     @IBAction func searchButtonTapped(_ sender: UIButton) {
-        mainTextField.becomeFirstResponder()
+//        mainTextField.becomeFirstResponder()
+        fetchCityWeather()
+    }
+    
+    @IBAction func futureWeatherButtonTapped(_ sender: UIButton) {
+        guard let cityName = cityName else {
+            return
+        }
+
+//        let vc = FutureWeatherVC(cityName: cityName)
+//        present(vc, animated: true)
+        
+        let vc = storyboard?.instantiateViewController(withIdentifier: "FutureWeatherVC") as! FutureWeatherVC
+        
+        vc.cityName = cityName
+        
+        navigationController?.pushViewController(vc, animated: true)
+        
+        
+    }
+    
+    
+    func fetchCityWeather(){
+        if let text = mainTextField.text{
+            if text.isEmpty{
+                mainTextField.placeholder = "Type a City"
+            }else{
+                currentWeatherManager.fetchWeather(cityName: text)
+            }
+        }else{
+            mainTextField.placeholder = "Type a City"
+        }
     }
     
 }
 extension CurrentWeatherAppVC: UITextFieldDelegate{
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        
+        if let text = textField.text{
+            if text.isEmpty{
+                textField.placeholder = "Type a City"
+            }else{
+                currentWeatherManager.fetchWeather(cityName: text)
+            }
+        }else{
+            textField.placeholder = "Type a City"
+        }
+        
         textField.resignFirstResponder()
         return true
     }
@@ -65,9 +111,11 @@ extension CurrentWeatherAppVC: CLLocationManagerDelegate{
 }
 
 extension CurrentWeatherAppVC: CurrentWeatherDelegate{
+    
     func fetchWeather(weather: CurrentWeatherModel) {
         DispatchQueue.main.async {
             self.cityNameLabel.text = weather.cityName
+            self.cityName = weather.cityName
             self.mainLabel.text = weather.temperatureString + "°c"
             self.mainImageView.image = UIImage(systemName: weather.conditionName)
         }
@@ -76,6 +124,4 @@ extension CurrentWeatherAppVC: CurrentWeatherDelegate{
     func errorFetchingWeather(error: Error) {
         print(error.localizedDescription)
     }
-    
-    
 }

@@ -26,6 +26,13 @@ class CurrentWeatherManager{
         
         createRequest(urlString: urlString)
     }
+    
+    func fetchWeather(cityName: String){
+        let urlString = "\(weatherURL)&q\(cityName)"
+        
+        createRequest(urlString: urlString)
+    }
+    
     func createRequest(urlString: String){
         let url = URL(string: urlString)
         
@@ -33,6 +40,7 @@ class CurrentWeatherManager{
             let session = URLSession(configuration: .default)
             
             let task = session.dataTask(with: url) { (data, response, error) in
+                
                 if let error = error {
                     self.currentWeatherDelegate?.errorFetchingWeather(error: error)
                 }
