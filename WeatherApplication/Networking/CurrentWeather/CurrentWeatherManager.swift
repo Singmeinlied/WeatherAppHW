@@ -17,7 +17,7 @@ class CurrentWeatherManager{
     
     static let shared = CurrentWeatherManager()
     
-    let weatherURL = "https://api.openweathermap.org/data/2.5/weather?appid=dfbc08b946087e1deb4540f86524bcc1&units=metric"
+    let weatherURL = "https://api.openweathermap.org/data/2.5/weather?appid=887423efb2e91bf0b8ce30df56f2ebd0&units=metric"
     
     var currentWeatherDelegate: CurrentWeatherDelegate?
     
